@@ -111,10 +111,10 @@ function newEventFromTemplate(interaction) {
   }
 
   return {
-    name: nome,
+    name: templates[nome].nome,
     scheduledStartTime: data,
-    channel: templates.canale,
-    description: templates.descrizione,
+    channel: templates[nome].canale,
+    description: templates[nome].descrizione,
   };
 }
 
