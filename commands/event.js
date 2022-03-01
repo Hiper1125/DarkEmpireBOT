@@ -21,10 +21,28 @@ module.exports = {
 
         .addStringOption((option) =>
           option
-            .setName("data")
-            .setDescription("La data dell'evento (formato: YYYY-MM-DD hh:mm)")
+            .setName("giorno")
+            .setDescription("Il giorno dell'evento (formato: YYYY-MM-DD hh:mm)")
             .setRequired(true)
+            .addChoice("oggi", "date0")
+            .addChoice("domani", "date1")
+            .addChoice("dopodomani", "date2")
+            .addChoice("tra 3 giorni", "date3")
+            .addChoice("tra 4 giorni", "date4")
+            .addChoice("tra 5 giorni", "date5")
+            .addChoice("tra 6 giorni", "date6")
+            .addChoice("la prossima settimana", "date7")
         )
+
+        .addIntegerOption((option) =>
+          option.setName("ora").setDescription("L'ora dell'evento")
+        )
+        .setRequired(true)
+
+        .addIntegerOption((option) =>
+          option.setName("minuti").setDescription("I minuti dell'evento")
+        )
+        .setRequired(true)
 
         .addChannelOption((option) =>
           option
@@ -48,18 +66,37 @@ module.exports = {
 
         .addStringOption((option) =>
           option
-            .setName("nome")
-            .setDescription("Il nome dell'evento")
+            .setName("tipo")
+            .setDescription("Il tipo di evento da creare")
             .setRequired(true)
             .addChoice("Amung Us", "amung_us")
+            .addChoice("Gartic Phone", "gartic_phone")
         )
 
         .addStringOption((option) =>
           option
-            .setName("data")
-            .setDescription("La data dell'evento (formato: YYYY-MM-DD hh:mm)")
+            .setName("giorno")
+            .setDescription("Il giorno dell'evento (formato: YYYY-MM-DD hh:mm)")
             .setRequired(true)
+            .addChoice("oggi", "date0")
+            .addChoice("domani", "date1")
+            .addChoice("dopodomani", "date2")
+            .addChoice("tra 3 giorni", "date3")
+            .addChoice("tra 4 giorni", "date4")
+            .addChoice("tra 5 giorni", "date5")
+            .addChoice("tra 6 giorni", "date6")
+            .addChoice("la prossima settimana", "date7")
         )
+
+        .addIntegerOption((option) =>
+          option.setName("ora").setDescription("L'ora dell'evento")
+        )
+        .setRequired(true)
+
+        .addIntegerOption((option) =>
+          option.setName("minuti").setDescription("I minuti dell'evento")
+        )
+        .setRequired(true)
     ),
 
   async execute(interaction) {
