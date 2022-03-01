@@ -60,23 +60,20 @@ DarkEmpire.on("messageCreate", (message) => {
 
     collected.forEach((wickResponse) => {
       if (wickResponse.embeds) {
-        try{
-
-            if (wickResponse.embeds[0].description != null) {
-            }
-    
+        try {
+          if (wickResponse.embeds[0].description != null) {
             if (
               wickResponse.embeds[0].description.includes("has been") ||
               wickResponse.embeds[0].description.includes("successful")
             ) {
-              wickResponse.channel.send("E' stato effettuato un " + commandData[0]);
+              wickResponse.channel.send(
+                "E' stato effettuato un " + commandData[0]
+              );
             }
+          }
+        } catch (error) {
+          console.log("[!]: Collector error");
         }
-        catch(error)
-        {
-            console.log("[!]: Collector error")
-        }
-
       }
     });
   });
