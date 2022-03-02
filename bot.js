@@ -7,6 +7,7 @@ const {
   guildId,
   prefix,
   wickBotId,
+  outputChannelId
 } = require("./config.json");
 const fs = require("fs");
 
@@ -62,13 +63,30 @@ DarkEmpire.on("messageCreate", (message) => {
       if (wickResponse.embeds) {
         try {
           if (wickResponse.embeds[0].description != null) {
-            if (
-              wickResponse.embeds[0].description.includes("has been") ||
-              wickResponse.embeds[0].description.includes("successful")
-            ) {
-              wickResponse.channel.send(
-                "E' stato effettuato un " + commandData[0]
+            let commandResult = wickResponse.embeds[0].description;
+
+            if (!commandResult.includes("nsuccessful")) {
+              if (
+                commandResult.includes("has been") ||
+                commandResult.includes("successful")
+              ) {
+                SendCommandResult(wickResponse, commandData);
+              }
+            } else {
+              let operationResults = commandResult.split("uccessful");
+
+              let successfulResult = parseInt(
+                operationResults[1].split("`")[1].match(/\d/g).join(""),
+                10
               );
+              let unsuccessfulResult = parseInt(
+                operationResults[2].split("`")[1].match(/\d/g).join(""),
+                10
+              );
+
+              if (successfulResult > 0) {
+                SendCommandResult(wickResponse, commandData);
+              }
             }
           }
         } catch (error) {
@@ -78,6 +96,18 @@ DarkEmpire.on("messageCreate", (message) => {
     });
   });
 });
+
+const SendCommandResult = (wickResponse, commandData) => {
+
+  /// if(commandData[0] ) included in config.json allowedCommands
+
+  /// then string format 
+
+  /// warn: Attenzione, @menzione ha ricevuto un'avvertimento da @mod 
+  /// ban + kick + mute + quarantine + timeout: Attenzione, User#2141 è stato bannato da HIPER#1125 per 10 giorni!
+
+  wickResponse.channel.send("E' stato effettuato un " + commandData[0]);
+};
 
 const Fetch = () => {
   const commands = [];

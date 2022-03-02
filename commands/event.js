@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { allowedEventRoles } = require("../config.json");
-const templates = require("./templates.json");
+const templates = require("../templates.json");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -22,27 +22,57 @@ module.exports = {
         .addStringOption((option) =>
           option
             .setName("giorno")
-            .setDescription("Il giorno dell'evento (formato: YYYY-MM-DD hh:mm)")
+            .setDescription("Il giorno dell'evento")
             .setRequired(true)
-            .addChoice("oggi", "date0")
-            .addChoice("domani", "date1")
-            .addChoice("dopodomani", "date2")
-            .addChoice("tra 3 giorni", "date3")
-            .addChoice("tra 4 giorni", "date4")
-            .addChoice("tra 5 giorni", "date5")
-            .addChoice("tra 6 giorni", "date6")
-            .addChoice("la prossima settimana", "date7")
+            .addChoice("oggi", "day0")
+            .addChoice("domani", "day1")
+            .addChoice("dopodomani", "day2")
+            .addChoice("tra 3 giorni", "day3")
+            .addChoice("tra 4 giorni", "day4")
+            .addChoice("tra 5 giorni", "day5")
+            .addChoice("tra 6 giorni", "day6")
+            .addChoice("la prossima settimana", "day7")
         )
 
-        .addIntegerOption((option) =>
-          option.setName("ora").setDescription("L'ora dell'evento")
+        .addStringOption((option) =>
+          option
+            .setName("ora")
+            .setDescription("L'ora dell'evento")
+            .setRequired(true)
+            .addChoice("all'una", "h1")
+            .addChoice("alle due", "h2")
+            .addChoice("alle tre", "h3")
+            .addChoice("alle quattro", "h4")
+            .addChoice("alle cinque", "h5")
+            .addChoice("alle sei", "h6")
+            .addChoice("alle sette", "h7")
+            .addChoice("alle otto", "h8")
+            .addChoice("alle nove", "h9")
+            .addChoice("alle dieci", "h10")
+            .addChoice("alle undici", "h11")
+            .addChoice("alle dodici", "h12")
         )
-        .setRequired(true)
 
-        .addIntegerOption((option) =>
-          option.setName("minuti").setDescription("I minuti dell'evento")
+        .addStringOption((option) =>
+          option
+            .setName("minuti")
+            .setDescription("I minuti dell'evento")
+            .setRequired(true)
+            .addChoice("in punto", "m0")
+            .addChoice("e dieci", "m10")
+            .addChoice("e un quarto", "m15")
+            .addChoice("e mezza", "m30")
+            .addChoice("e un quarto", "m45")
         )
-        .setRequired(true)
+
+        .addStringOption((option) =>
+          option
+            .setName("orario")
+            .setDescription("L'orario dell'evento")
+            .setRequired(true)
+            .addChoice("AM", "am")
+            .addChoice("PM", "pm")
+        )
 
         .addChannelOption((option) =>
           option
@@ -76,27 +106,57 @@ module.exports = {
         .addStringOption((option) =>
           option
             .setName("giorno")
-            .setDescription("Il giorno dell'evento (formato: YYYY-MM-DD hh:mm)")
+            .setDescription("Il giorno dell'evento")
             .setRequired(true)
-            .addChoice("oggi", "date0")
-            .addChoice("domani", "date1")
-            .addChoice("dopodomani", "date2")
-            .addChoice("tra 3 giorni", "date3")
-            .addChoice("tra 4 giorni", "date4")
-            .addChoice("tra 5 giorni", "date5")
-            .addChoice("tra 6 giorni", "date6")
-            .addChoice("la prossima settimana", "date7")
+            .addChoice("oggi", "day0")
+            .addChoice("domani", "day1")
+            .addChoice("dopodomani", "day2")
+            .addChoice("tra 3 giorni", "day3")
+            .addChoice("tra 4 giorni", "day4")
+            .addChoice("tra 5 giorni", "day5")
+            .addChoice("tra 6 giorni", "day6")
+            .addChoice("la prossima settimana", "day7")
         )
 
-        .addIntegerOption((option) =>
-          option.setName("ora").setDescription("L'ora dell'evento")
+        .addStringOption((option) =>
+          option
+            .setName("ora")
+            .setDescription("L'ora dell'evento")
+            .setRequired(true)
+            .addChoice("all'una", "h1")
+            .addChoice("alle due", "h2")
+            .addChoice("alle tre", "h3")
+            .addChoice("alle quattro", "h4")
+            .addChoice("alle cinque", "h5")
+            .addChoice("alle sei", "h6")
+            .addChoice("alle sette", "h7")
+            .addChoice("alle otto", "h8")
+            .addChoice("alle nove", "h9")
+            .addChoice("alle dieci", "h10")
+            .addChoice("alle undici", "h11")
+            .addChoice("alle dodici", "h12")
         )
-        .setRequired(true)
 
-        .addIntegerOption((option) =>
-          option.setName("minuti").setDescription("I minuti dell'evento")
+        .addStringOption((option) =>
+          option
+            .setName("minuti")
+            .setDescription("I minuti dell'evento")
+            .setRequired(true)
+            .addChoice("in punto", "m0")
+            .addChoice("e dieci", "m10")
+            .addChoice("e un quarto", "m15")
+            .addChoice("e mezza", "m30")
+            .addChoice("e un quarto", "m45")
         )
-        .setRequired(true)
+
+        .addStringOption((option) =>
+          option
+            .setName("orario")
+            .setDescription("L'orario dell'evento")
+            .setRequired(true)
+            .addChoice("AM", "am")
+            .addChoice("PM", "pm")
+        )
     ),
 
   async execute(interaction) {
