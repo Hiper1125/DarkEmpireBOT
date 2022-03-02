@@ -7,7 +7,8 @@ const {
   guildId,
   prefix,
   wickBotId,
-  outputChannelId
+  outputChannelId,
+  allowedCommands
 } = require("./config.json");
 const fs = require("fs");
 
@@ -70,7 +71,7 @@ DarkEmpire.on("messageCreate", (message) => {
                 commandResult.includes("has been") ||
                 commandResult.includes("successful")
               ) {
-                SendCommandResult(wickResponse, commandData);
+                SendCommandResult(wickResponse, commandData, message.author);
               }
             } else {
               let operationResults = commandResult.split("uccessful");
@@ -85,7 +86,7 @@ DarkEmpire.on("messageCreate", (message) => {
               );
 
               if (successfulResult > 0) {
-                SendCommandResult(wickResponse, commandData);
+                SendCommandResult(wickResponse, commandData, message.author);
               }
             }
           }
@@ -97,14 +98,60 @@ DarkEmpire.on("messageCreate", (message) => {
   });
 });
 
-const SendCommandResult = (wickResponse, commandData) => {
+const SendCommandResult = (wickResponse, commandData, user) => {
+  if (allowedCommands.includes(commandData[0])) {
 
-  /// if(commandData[0] ) included in config.json allowedCommands
+    let formattedOutput = "Attenzione, ";
 
-  /// then string format 
+    //ottnere target ID in base a quello che c'è nel command data
+    //potrebbe esserci un ID, una menzione, o un nome parziale con cui fare la ricerca
 
-  /// warn: Attenzione, @menzione ha ricevuto un'avvertimento da @mod 
-  /// ban + kick + mute + quarantine + timeout: Attenzione, User#2141 è stato bannato da HIPER#1125 per 10 giorni!
+    let targetID = "";
+
+    formattedOutput += "<@" + targetID + "> ";
+
+    if(commandData[0] == "ban" || commandData[0] == "b")
+    {
+      formattedOutput += "è stato bannato da "
+    }
+    else if(commandData[0] == "kick" || commandData[0] == "k")
+    {
+      formattedOutput += "è stato espulso da "
+    }
+    else if(commandData[0] == "mute" || commandData[0] == "m")
+    {
+      formattedOutput += "è stato mutato da "
+    }
+    else if(commandData[0] == "unmute" || commandData[0] == "um")
+    {
+      formattedOutput += "è stato smutato da "
+    }
+    else if(commandData[0] == "quarantine" || commandData[0] == "q")
+    {
+      formattedOutput += "è stato bloccato da "
+    }
+    else if(commandData[0] == "unquarantine" || commandData[0] == "uq")
+    {
+      formattedOutput += "è stato sbloccato da "
+    }
+    else if(commandData[0] == "timeout" || commandData[0] == "t")
+    {
+      formattedOutput += "è stato sospeso da "
+    }
+    else if(commandData[0] == "warn" || commandData[0] == "w")
+    {
+      formattedOutput += "ha ricevuto un'avvertimento da "
+    }
+
+    formattedOutput += "<@" + user.id + ">";
+
+    //se c'è un ?t
+    //formattedOutput += per x tempo (10 giorni, 20 ore)
+
+    formattedOutput += "!";
+
+    //in base al outputChannel inviare il messaggio
+  }
 
   wickResponse.channel.send("E' stato effettuato un " + commandData[0]);
 };
