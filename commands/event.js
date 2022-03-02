@@ -83,6 +83,22 @@ module.exports = {
 
         .addStringOption((option) =>
           option
+            .setName("durata")
+            .setDescription("La durata dell'evento")
+            .setRequired(false)
+            .addChoice("1 ora", "h1")
+            .addChoice("2 ore", "h2")
+            .addChoice("3 ore", "h3")
+            .addChoice("4 ore", "h4")
+            .addChoice("1 giorno", "h24")
+            .addChoice("2 giorni", "h48")
+            .addChoice("3 giorni", "h72")
+            .addChoice("5 giorni", "h120")
+            .addChoice("7 giorni", "h168")
+        )
+
+        .addStringOption((option) =>
+          option
             .setName("descrizione")
             .setDescription("La descrizione dell'evento")
             .setRequired(false)
@@ -157,10 +173,26 @@ module.exports = {
             .addChoice("AM", "am")
             .addChoice("PM", "pm")
         )
+
+        .addStringOption((option) =>
+        option
+          .setName("durata")
+          .setDescription("La durata dell'evento")
+          .setRequired(false)
+          .addChoice("1 ora", "h1")
+          .addChoice("2 ore", "h2")
+          .addChoice("3 ore", "h3")
+          .addChoice("4 ore", "h4")
+          .addChoice("1 giorno", "h24")
+          .addChoice("2 giorni", "h48")
+          .addChoice("3 giorni", "h72")
+          .addChoice("5 giorni", "h120")
+          .addChoice("7 giorni", "h168")
+      )
     ),
 
   async execute(interaction) {
-    if (isVerifiedUser(interaction.message.member)) {
+    if (isUserAllowed(interaction.message.member)) {
       var event;
       if (interaction.subcommand.name === "nuovo") {
         event = newEvent(interaction);
@@ -175,12 +207,17 @@ module.exports = {
   },
 };
 
-function newEvent(interaction) {
-  const { nome, canale, descrizione } = interaction.options;
-  const data = getDateFromString(interaction.options.data);
+const newEvent = (interaction) => {
+  const { nome, canale, giorno, ora, minuti, orario, durata, descrizione } =
+    interaction.options;
+    
+  const dataInizio = getDate(giorno, ora, minuti, orario);
+  const dataFine = dataInizio.clone();
+  dataFine.setHours(dataFine.getHours() + parseInt(durata.replace("h", "")));
+  
   const guild = interaction.message.guild;
 
-  if (!data) {
+  if (!dataInizio) {
     interaction.message.reply("La data non è valida");
     return;
   }
@@ -192,30 +229,51 @@ function newEvent(interaction) {
 
   return {
     name: nome,
-    scheduledStartTime: data,
+    scheduledStartTime: dataInizio,
+    scheduledEndTime: dataFine,
     channel: canale,
     description: descrizione,
   };
 }
 
-function newEventFromTemplate(interaction) {
-  const { nome } = interaction.options;
-  const data = getDateFromString(interaction.options.data);
+const newEventFromTemplate = (interaction) => {
+  const { nome, giorno, ora, minuti, orario, durata } = interaction.options;
+  const dataInizio = getDate(giorno, ora, minuti, orario);
+  const dataFine = dataInizio.clone();
+  dataFine.setHours(dataFine.getHours() + parseInt(durata.replace("h", "")));
 
-  if (!data) {
+  if (!dataInizio) {
     interaction.message.reply("La data non è valida");
     return;
   }
 
+  const guild = interaction.message.guild;
+  const categoryId = templates[nome].categoria;
+  channel = getFirstFreeChannel(guild, categoryId);
+
   return {
     name: templates[nome].nome,
-    scheduledStartTime: data,
-    channel: templates[nome].canale,
+    scheduledStartTime: dataInizio,
+    scheduledEndTime: dataFine,
+    channel: channel,
     description: templates[nome].descrizione,
   };
 }
 
-function isVerifiedUser(user) {
+const getFirstFreeChannel = (guild, categoryId) => {
+  const events = guild.scheduledEvents.cache.filter(event => event.channel.parentId === categoryId);
+  const voiceChannels = guild.channels.cache.get(categoryId).children.filter(c => c.type === "GUILD_VOICE");
+
+  voiceChannels.forEach(channel => {
+    if (!events.find(event => event.channel === channel.id)) {
+      return channel;
+    }
+  });
+
+  // ? se non trovo un canale libero vuoi un errore?
+}
+
+const isUserAllowed = (user) => {
   allowedEventRoles.forEach((role) => {
     if (user.roles.cache.has(role)) {
       return true;
@@ -225,14 +283,20 @@ function isVerifiedUser(user) {
   return false;
 }
 
-function getDateFromString(string) {
-  const strings = string.split(" ");
+const getDate = (giorno, ora, minuti, orario) => {
+  const date = new Date();
+  const days = parseInt(giorno.replace("d", ""));
 
-  const dateTime = strings[0] + "T" + strings[1];
+  date.setDate(date.getDate() + days);
 
-  return Date.parse(dateTime);
+  date.setHours(parseInt(ora.replace("h", "")) + orario === "pm" ? 12 : 0);
+  date.setMinutes(parseInt(minuti.replace("m", "")));
+  date.setSeconds(0);
+
+  return date;
 }
 
-function checkChannel(guild, channelName) {
-  return guild.channels.cache.has(channelName);
+const checkChannel = (guild, channelName) => {
+  const channel = guild.channels.cache.find(c => c.name === channelName && c.type === "GUILD_VOICE");
+  return channel !== null;
 }

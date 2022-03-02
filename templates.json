@@ -1,7 +1,17 @@
 {
     "among_us": {
         "nome": "Among Us",
-        "descrizione": "e che ne so io",
-        "canale": ["id canale"]
+        "descrizione": "Partite di Among Us!",
+        "categoria": "938185939619029022"
+    },
+    "gartic_phone": {
+        "nome": "Gartic Phone",
+        "descrizione": "Partite su Gartic Phone!",
+        "categoria": "790552947364462619"
+    },
+    "minecraft": {
+        "nome": "Minecraft",
+        "descrizione": "Giochiamo a Minecraft!",
+        "categoria": "790552947364462619"
     }
 }
