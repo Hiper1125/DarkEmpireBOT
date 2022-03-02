@@ -62,7 +62,7 @@ module.exports = {
             .addChoice("e dieci", "m10")
             .addChoice("e un quarto", "m15")
             .addChoice("e mezza", "m30")
-            .addChoice("e un quarto", "m45")
+            .addChoice("e quarantacinque", "m45")
         )
 
         .addStringOption((option) =>
@@ -146,7 +146,7 @@ module.exports = {
             .addChoice("e dieci", "m10")
             .addChoice("e un quarto", "m15")
             .addChoice("e mezza", "m30")
-            .addChoice("e un quarto", "m45")
+            .addChoice("e quarantacinque", "m45")
         )
 
         .addStringOption((option) =>
