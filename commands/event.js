@@ -110,14 +110,18 @@ module.exports = {
       subcommand
         .setName("template")
         .setDescription("Crea un nuovo evento da un template")
-
-        .addStringOption((option) =>
+        .addStringOption((option) => {
           option
-            .setName("tipo")
-            .setDescription("Il tipo di evento da creare")
-            .setRequired(true)
-            .addChoice("Amung Us", "among_us")
-            .addChoice("Gartic Phone", "gartic_phone")
+          .setName("tipo")
+          .setDescription("Il tipo di evento da creare")
+          .setRequired(true)
+          .addChoice("Amung Us", "among_us")
+          .addChoice("Gartic Phone", "gartic_phone");
+
+          //forEach in template.json addChoice
+
+          return option;
+        }
         )
 
         .addStringOption((option) =>
