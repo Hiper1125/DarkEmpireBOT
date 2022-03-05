@@ -115,7 +115,7 @@ module.exports = {
             .setName("tipo")
             .setDescription("Il tipo di evento da creare")
             .setRequired(true)
-            .addChoice("Amung Us", "amung_us")
+            .addChoice("Amung Us", "among_us")
             .addChoice("Gartic Phone", "gartic_phone")
         )
 
@@ -193,11 +193,13 @@ module.exports = {
 
   async execute(interaction) {
     if (isUserAllowed(interaction.member)) {
-      const event = createEvent(interaction);
+      try {
+        const event = createEvent(interaction);
 
-      if (event) {
-        interaction.guild.scheduledEvents.create(event);
+        await interaction.guild.scheduledEvents.create(event);
         interaction.reply("Evento creato");
+      } catch (error) {
+        interaction.reply(error);
       }
     } else {
       interaction.reply("Cazzo vuoi? mica sei l'owner!");
@@ -230,8 +232,7 @@ const createEvent = (interaction) => {
   if (dataInizio.getTime() > Date.now()) {
     event.scheduledStartTime = dataInizio;
   } else {
-    interaction.reply("Non puoi creare un evento in passato");
-    return;
+    throw "Non puoi creare un evento in passato";
   }
 
   if (options.durata) {
@@ -245,10 +246,9 @@ const createEvent = (interaction) => {
 
   if (isNew) {
     if (checkChannel(guild, options.canale)) {
-      interaction.reply("Il canale non è valido");
-      return;
-    } else {
       event.channel = options.canale;
+    } else {
+      throw "Il canale non è valido";
     }
   } else {
     const channel = getFirstFreeChannel(
@@ -259,7 +259,7 @@ const createEvent = (interaction) => {
     if (channel) {
       event.channel = channel;
     } else {
-      interaction.reply("Non c'è nessun canale disponibile");
+      throw "Non c'è nessun canale disponibile";
     }
   }
 
@@ -298,15 +298,17 @@ const getFirstFreeChannel = (guild, categoryId) => {
   const events = guild.scheduledEvents.cache.filter(
     (event) => event.channel.parentId === categoryId
   );
+
   const voiceChannels = guild.channels.cache
     .get(categoryId)
     .children.filter((c) => c.type === "GUILD_VOICE");
 
-  voiceChannels.forEach((channel) => {
-    if (!events.find((event) => event.channel === channel.id)) {
-      return channel;
+  for (const c of voiceChannels) {
+    channel = c[1];
+    if (!events.find((event) => event.channelId === channel.id)) {
+      return channel.id;
     }
-  });
+  }
 };
 
 const isUserAllowed = (user) => {
@@ -326,7 +328,7 @@ const getDate = (giorno, ora, minuti, orario) => {
   date.setDate(date.getDate() + days);
 
   const hour =
-    parseInt(ora.replace("h", ""), 10) + (orario === "pm" ? 12 : 0) + 1; // +1 cuz yes (maybe cuz è l'orario italiano)
+    parseInt(ora.replace("h", ""), 10) + (orario === "pm" ? 12 : 0);
 
   date.setHours(hour);
   date.setMinutes(parseInt(minuti.replace("m", "")));
@@ -335,9 +337,9 @@ const getDate = (giorno, ora, minuti, orario) => {
   return date;
 };
 
-const checkChannel = (guild, channelName) => {
+const checkChannel = (guild, channelId) => {
   const channel = guild.channels.cache.find(
-    (c) => c.name === channelName && c.type === "GUILD_VOICE"
+    (c) => c.id === channelId && c.type === "GUILD_VOICE"
   );
   return channel !== null;
 };
