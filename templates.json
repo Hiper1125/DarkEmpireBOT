@@ -2,16 +2,19 @@
     "among_us": {
         "nome": "Among Us",
         "descrizione": "Partite di Among Us!",
-        "categoria": "938185939619029022"
+        "categoria": "938185939619029022",
+        "immagine": "https://cdn.discordapp.com/attachments/869661460299677786/949750858290188328/unnamed.jpg"
     },
     "gartic_phone": {
         "nome": "Gartic Phone",
         "descrizione": "Partite su Gartic Phone!",
-        "categoria": "790552947364462619"
+        "categoria": "790552947364462619",
+        "immagine": "https://cdn.discordapp.com/attachments/869661460299677786/949751202147627080/unnamed.png"
     },
     "minecraft": {
         "nome": "Minecraft",
         "descrizione": "Giochiamo a Minecraft!",
-        "categoria": "790552947364462619"
+        "categoria": "790552947364462619",
+        "immagine": "https://cdn.discordapp.com/attachments/869661460299677786/949752251260477531/41_888ef.png"
     }
 }

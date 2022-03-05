@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { allowedEventRoles } = require("../config.json");
+const { MessageActionRow, MessageButton, MessageEmbed } = require("discord.js");
+const { allowedEventRoles, eventChannelId } = require("../config.json");
 const templates = require("../templates.json");
 
 module.exports = {
@@ -194,10 +195,61 @@ module.exports = {
   async execute(interaction) {
     if (isUserAllowed(interaction.member)) {
       try {
-        const event = createEvent(interaction);
+        const eventData = createEvent(interaction);
 
-        await interaction.guild.scheduledEvents.create(event);
-        interaction.reply("Evento creato");
+        const event = await interaction.guild.scheduledEvents.create(eventData);
+        await interaction.reply("Evento creato");
+
+        // stampare sul embed sul canale designato nelle config
+        channel = interaction.guild.channels.cache.get(eventChannelId);
+        const user = interaction.user;
+
+        const embed = new MessageEmbed();
+        embed
+          .setColor("202225")
+          .setTitle("Clicca per partecipare")
+          .setURL(event.url)
+          .setAuthor({name: user.tag , iconURL: user.avatarURL()})
+          .addFields(
+            { name: "Tipo evento", value: event.name, inline: true },
+            {
+              name: "Data evento",
+              value: "<t:" + event.scheduledStartTimestamp + ">",
+              inline: true,
+            },
+            { name: "Creatore", value: "<@" + user.id + ">", inline: true }
+          )
+          .setFooter({ text: user.tag, iconURL: user.avatarURL() })
+          .setTimestamp(event.scheduledStartTimestamp);
+
+        if (event.description) {
+          embed.addFields({name: "Descrizione", value: event.description});
+        }
+        if (interaction.options.getSubcommand() === "template") {
+          if (templates[interaction.options.getString("tipo")].immagine) {
+            embed.setThumbnail(templates[interaction.options.getString("tipo")].immagine);
+          }
+        }
+
+        const row = new MessageActionRow()
+          .addComponents(
+            new MessageButton()
+              .setLabel("Dettagli evento")
+              .setStyle("LINK")
+              .setURL(event.url)
+          )
+          .addComponents(
+            new MessageButton()
+              .setCustomId("delete")
+              .setLabel("Cancella evento")
+              .setStyle("DANGER")
+          );
+
+         await channel.send({
+          embeds: [embed],
+          content: "Hey @everyone, nuovo evento!",
+          components: [row],
+        }); 
       } catch (error) {
         interaction.reply(error);
       }
@@ -327,8 +379,7 @@ const getDate = (giorno, ora, minuti, orario) => {
 
   date.setDate(date.getDate() + days);
 
-  const hour =
-    parseInt(ora.replace("h", ""), 10) + (orario === "pm" ? 12 : 0);
+  const hour = parseInt(ora.replace("h", ""), 10) + (orario === "pm" ? 12 : 0);
 
   date.setHours(hour);
   date.setMinutes(parseInt(minuti.replace("m", "")));
