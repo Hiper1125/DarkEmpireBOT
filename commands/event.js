@@ -112,17 +112,16 @@ module.exports = {
         .setDescription("Crea un nuovo evento da un template")
         .addStringOption((option) => {
           option
-          .setName("tipo")
-          .setDescription("Il tipo di evento da creare")
-          .setRequired(true)
-          .addChoice("Amung Us", "among_us")
-          .addChoice("Gartic Phone", "gartic_phone");
+            .setName("tipo")
+            .setDescription("Il tipo di evento da creare")
+            .setRequired(true);
 
-          //forEach in template.json addChoice
+          for (let [key, template] of Object.entries(templates)) {
+            option.addChoice(template.nome, key);
+          }
 
           return option;
-        }
-        )
+        })
 
         .addStringOption((option) =>
           option
@@ -213,7 +212,7 @@ module.exports = {
           .setColor("202225")
           .setTitle("Clicca per partecipare")
           .setURL(event.url)
-          .setAuthor({name: user.tag , iconURL: user.avatarURL()})
+          .setAuthor({ name: user.tag, iconURL: user.avatarURL() })
           .addFields(
             { name: "Tipo evento", value: event.name, inline: true },
             {
@@ -227,11 +226,13 @@ module.exports = {
           .setTimestamp(event.scheduledStartTimestamp);
 
         if (event.description) {
-          embed.addFields({name: "Descrizione", value: event.description});
+          embed.addFields({ name: "Descrizione", value: event.description });
         }
         if (interaction.options.getSubcommand() === "template") {
           if (templates[interaction.options.getString("tipo")].immagine) {
-            embed.setThumbnail(templates[interaction.options.getString("tipo")].immagine);
+            embed.setThumbnail(
+              templates[interaction.options.getString("tipo")].immagine
+            );
           }
         }
 
@@ -249,11 +250,11 @@ module.exports = {
               .setStyle("DANGER")
           );
 
-         await channel.send({
+        await channel.send({
           embeds: [embed],
           content: "Hey @everyone, nuovo evento!",
           components: [row],
-        }); 
+        });
       } catch (error) {
         interaction.reply(error);
       }
