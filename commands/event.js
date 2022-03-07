@@ -104,6 +104,12 @@ module.exports = {
             .setDescription("La descrizione dell'evento")
             .setRequired(false)
         )
+
+        .addStringOption((option) => 
+          option.setName("immagine")
+          .setDescription("L'URL per l'immagine di copertina")
+          .setRequired(false)
+        )
     )
 
     .addSubcommand((subcommand) =>
@@ -203,7 +209,6 @@ module.exports = {
         const event = await interaction.guild.scheduledEvents.create(eventData);
         await interaction.reply("Evento creato");
 
-        // stampare sul embed sul canale designato nelle config
         channel = interaction.guild.channels.cache.get(eventChannelId);
         const user = interaction.user;
 
@@ -235,6 +240,10 @@ module.exports = {
             );
           }
         }
+        else if(interaction.options.getString("immagine"))
+        {
+          embed.setThumbnail(interaction.options.getString("immagine"));
+        }
 
         const row = new MessageActionRow()
           .addComponents(
@@ -245,7 +254,7 @@ module.exports = {
           )
           .addComponents(
             new MessageButton()
-              .setCustomId("delete")
+              .setCustomId("delete_" + event.id)
               .setLabel("Cancella evento")
               .setStyle("DANGER")
           );
