@@ -105,10 +105,11 @@ module.exports = {
             .setRequired(false)
         )
 
-        .addStringOption((option) => 
-          option.setName("immagine")
-          .setDescription("L'URL per l'immagine di copertina")
-          .setRequired(false)
+        .addStringOption((option) =>
+          option
+            .setName("immagine")
+            .setDescription("L'URL per l'immagine di copertina")
+            .setRequired(false)
         )
     )
 
@@ -239,9 +240,7 @@ module.exports = {
               templates[interaction.options.getString("tipo")].immagine
             );
           }
-        }
-        else if(interaction.options.getString("immagine"))
-        {
+        } else if (interaction.options.getString("immagine")) {
           embed.setThumbnail(interaction.options.getString("immagine"));
         }
 
@@ -263,6 +262,23 @@ module.exports = {
           embeds: [embed],
           content: "Hey @everyone, nuovo evento!",
           components: [row],
+        });
+
+        const filter = (btnInteraction) => {
+          return isUserAllowed(btnInteraction.member);
+        };
+        const collector = channel.createMessageComponentCollector({ filter });
+
+        collector.on("collect", async (btnInteraction) => {
+          const guild = btnInteraction.guild;
+
+          if (btnInteraction.customId.includes("delete")) {
+            const options = btnInteraction.customId.split("_");
+            if (guild.scheduledEvents.cache.has(options[1])) {
+              guild.scheduledEvents.cache.get(options[1]).delete();
+            }
+            btnInteraction.message.delete();
+          }
         });
       } catch (error) {
         interaction.reply(error);
