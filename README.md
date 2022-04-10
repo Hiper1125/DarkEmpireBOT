@@ -49,9 +49,9 @@ Basic config.json configuration
 
 Basic templates.json configuration
 
-- 1) Copy and paste the exemple above to the templates.json file adding one more item to the array (max 25)
-- 2) Change the `template_name` to the actual name of your template
-- 3) Then edit the parameters of the template: 
+1) Copy and paste the exemple above to the templates.json file adding one more item to the array (max 25)
+2) Change the `template_name` to the actual name of your template
+3) Then edit the parameters of the template: 
 -     `nome` is the name of the event that will be create running /evento template
 -     `descrizione` is the description of the event ...
 -     `categoria` is the id of the category you want the bot takes channels for schedule the event in
