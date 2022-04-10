@@ -1,6 +1,6 @@
 # 💀 Dark Empire Bot
 
-A discord bot made for events scheduling completely free to download 🧙🏻‍♂️
+A discord bot made for events scheduling completely free to download 📅
 
 - If you need help with this project, you can join our discord server by just clicking [here](https://discord.gg/hKFFG2JD9M).
 - If you don't have any development knowledge, we suggest you to join our Discord server to get help.*
