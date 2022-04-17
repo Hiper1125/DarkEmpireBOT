@@ -16,5 +16,23 @@
         "descrizione": "Giochiamo a Minecraft!",
         "categoria": "790552947364462619",
         "immagine": "https://cdn.discordapp.com/attachments/869661460299677786/949752251260477531/41_888ef.png"
+    },
+    "duck":{
+        "nome": "Goose Goose Duck",
+        "descrizione": "Giochiamo a Goose Goose Duck!",
+        "categoria": "790552947364462619",
+        "immagine": "https://media.discordapp.net/attachments/869661460299677786/953368835711459338/2l652ZLy6I_sz1hYKEKHxAlIt65gQfXqBSRLF3WCSxj_51_i_xUyxuRxY6r5ionKJHQ.png"
+    },
+    "jackbox":{
+        "nome": "Jackbox.tv",
+        "descrizione": "Giochiamo a Jackbox.tv!",
+        "categoria": "790552947364462619",
+        "immagine": "https://media.discordapp.net/attachments/869661460299677786/954817464804470841/screenshot_69.png"
+    }, 
+    "partygames":{
+        "nome": "Party Games",
+        "descrizione": "Giochiamo ai Party Games!\n(Plato, Jackbox.tv)",
+        "categoria": "790552947364462619",
+        "immagine": "https://media.discordapp.net/attachments/869661460299677786/956173681942474752/screenshot_84.png"
     }
 }

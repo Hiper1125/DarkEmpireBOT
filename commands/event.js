@@ -1,7 +1,18 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageActionRow, MessageButton, MessageEmbed } = require("discord.js");
 const { allowedEventRoles, eventChannelId } = require("../config.json");
+const { telegramToken, telegramChannelId } = require("../config.json");
 const templates = require("../templates.json");
+
+const setTemplates = () => {
+  getJSON(
+    "https://api.npoint.io/8d79844dd1349f9c0bd6",
+    function (error, response) {
+      templates = response;
+      console.log(templates);
+    }
+  );
+};
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -80,6 +91,17 @@ module.exports = {
             .setName("canale")
             .setDescription("Il canale in cui verrà effettuato l'evento")
             .setRequired(true)
+        )
+
+        .addStringOption((option) =>
+          option
+            .setName("tipo")
+            .setDescription(
+              "Il tipo di canale in cui verrà effettuato l'evento"
+            )
+            .setRequired(true)
+            .addChoice("Canale vocale", "canale2")
+            .addChoice("Canale palco", "canale1")
         )
 
         .addStringOption((option) =>
@@ -214,6 +236,7 @@ module.exports = {
         const user = interaction.user;
 
         const embed = new MessageEmbed();
+
         embed
           .setColor("202225")
           .setTitle("Clicca per partecipare")
@@ -223,7 +246,10 @@ module.exports = {
             { name: "Tipo evento", value: event.name, inline: true },
             {
               name: "Data evento",
-              value: "<t:" + event.scheduledStartTimestamp + ">",
+              value:
+                "<t:" +
+                Math.floor(eventData.scheduledStartTime.getTime() / 1000) +
+                ">",
               inline: true,
             },
             { name: "Creatore", value: "<@" + user.id + ">", inline: true }
@@ -234,15 +260,19 @@ module.exports = {
         if (event.description) {
           embed.addFields({ name: "Descrizione", value: event.description });
         }
+
+        let immagine = null;
+
         if (interaction.options.getSubcommand() === "template") {
           if (templates[interaction.options.getString("tipo")].immagine) {
-            embed.setThumbnail(
-              templates[interaction.options.getString("tipo")].immagine
-            );
+            immagine =
+              templates[interaction.options.getString("tipo")].immagine;
           }
         } else if (interaction.options.getString("immagine")) {
-          embed.setThumbnail(interaction.options.getString("immagine"));
+          immagine = interaction.options.getString("immagine");
         }
+
+        embed.setThumbnail(immagine);
 
         const row = new MessageActionRow()
           .addComponents(
@@ -264,6 +294,8 @@ module.exports = {
           components: [row],
         });
 
+        sendToTelegram("Nuovo evento: " + event.name, event.url, immagine);
+
         const filter = (btnInteraction) => {
           return isUserAllowed(btnInteraction.member);
         };
@@ -281,6 +313,7 @@ module.exports = {
           }
         });
       } catch (error) {
+        console.log(error);
         interaction.reply(error);
       }
     } else {
@@ -295,10 +328,19 @@ const createEvent = (interaction) => {
 
   const guild = interaction.guild;
 
+  let tipoStr = "";
+
+  let tipo = 2;
+
+  if (isNew) {
+    tipoStr += options.tipo.replace("canale", "");
+    tipo = parseInt(tipoStr);
+  }
+
   var event = {
     name: isNew ? options.nome : templates[options.nome].nome,
     privacyLevel: 2,
-    entityType: 2,
+    entityType: tipo,
     description: isNew
       ? options.descrizione
       : templates[options.nome].descrizione,
@@ -361,6 +403,7 @@ const getOptions = (interaction) => {
       durata: interaction.options.getString("durata"),
       descrizione: interaction.options.getString("descrizione"),
       canale: interaction.options.getChannel("canale"),
+      tipo: interaction.options.getString("tipo"),
     };
   } else if (interaction.options.getSubcommand() === "template") {
     options = {
@@ -423,4 +466,19 @@ const checkChannel = (guild, channelId) => {
     (c) => c.id === channelId && c.type === "GUILD_VOICE"
   );
   return channel !== null;
+};
+
+const sendToTelegram = (message, eventLink, image) => {
+  const { Telegraf, Markup } = require("telegraf");
+  const TelgramBot = new Telegraf(telegramToken);
+
+  const buttons = Markup.inlineKeyboard([
+    Markup.button.url("Dettagli evento", eventLink),
+  ]);
+
+  TelgramBot.telegram.sendPhoto(telegramChannelId, image, {
+    caption: message,
+    parse_mode: "MarkdownV2",
+    reply_markup: buttons.reply_markup,
+  });
 };

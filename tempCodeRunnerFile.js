@@ -1,15 +1,19 @@
+
 const { OnMessage } = require("./warnings/warner.js");
 
 const { Client, Collection, Intents } = require("discord.js");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
-const { discordToken, clientId, guildId } = require("./config.json");
+const {
+  token,
+  clientId,
+  guildId,
+} = require("./config.json");
 const fs = require("fs");
 
-/*const commandFiles = fs
+const commandFiles = fs
   .readdirSync("./commands")
   .filter((file) => file.endsWith(".js"));
-  */
 
 const DarkEmpire = new Client({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
@@ -38,18 +42,15 @@ DarkEmpire.on("interactionCreate", async (interaction) => {
 
 //DarkEmpire.on("messageCreate", (message) => OnMessage(message));
 
-const Fetch = async () => {
+const Fetch = () => {
+  const commands = [];
 
-  const data = await require(`./commands/event.js`).data.toJSON();
-  
-  const commands = [data];
-
-  /*for (const file of commandFiles) {
+  for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     commands.push(command.data.toJSON());
-  }*/
+  }
 
-  const rest = new REST({ version: "9" }).setToken(discordToken);
+  const rest = new REST({ version: "9" }).setToken(token);
 
   (async () => {
     try {
@@ -69,19 +70,12 @@ const Fetch = async () => {
 const Start = () => {
   Fetch();
 
-  DarkEmpire.login(discordToken);
+  DarkEmpire.login(token);
 
-  try {
-    const command = require(`./commands/event.js`);
-    DarkEmpire.commands.set(command.data.name, command);
-  } catch (error) {
-    console.log("errore nel caricamento");
-  }
-
-  /* for (const file of commandFiles) {
+  for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     DarkEmpire.commands.set(command.data.name, command);
-  } */
+  }
 };
 
 DarkEmpire.on("ready", () => {
