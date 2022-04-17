@@ -2,16 +2,11 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageActionRow, MessageButton, MessageEmbed } = require("discord.js");
 const { allowedEventRoles, eventChannelId } = require("../config.json");
 const { telegramToken, telegramChannelId } = require("../config.json");
-const templates = require("../templates.json");
+const request = require("sync-request");
 
-const setTemplates = () => {
-  getJSON(
-    "https://api.npoint.io/8d79844dd1349f9c0bd6",
-    function (error, response) {
-      templates = response;
-      console.log(templates);
-    }
-  );
+const getTemplates = () => {
+  var res = request("GET", "https://api.npoint.io/8d79844dd1349f9c0bd6");
+  return JSON.parse(res.getBody('utf8'));
 };
 
 module.exports = {
@@ -145,6 +140,7 @@ module.exports = {
             .setDescription("Il tipo di evento da creare")
             .setRequired(true);
 
+          const templates = getTemplates();
           for (let [key, template] of Object.entries(templates)) {
             option.addChoice(template.nome, key);
           }
